@@ -1,4 +1,4 @@
-from nornir import InitNornir
+from nornir import InitNornir # Import function
 from nornir_napalm.plugins.tasks import napalm_get, napalm_cli
 from nornir_utils.plugins.functions import print_result
 
