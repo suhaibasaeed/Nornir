@@ -1,2 +1,2 @@
 # Nornir
-Nornir scripts from various courses
+Nornir scripts I've created from CBT and KTB courses
