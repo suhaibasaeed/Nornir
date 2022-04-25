@@ -1,0 +1,7 @@
+---
+# Week 1 - Exercise 3
+ios:
+  platform: cisco_ios
+  username: pyclass
+  password: test
+  port: 22
