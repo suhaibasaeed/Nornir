@@ -1,0 +1,15 @@
+In [1]: from nornir import InitNornir
+
+In [2]: nr = InitNornir() # Create nornir object using InitNornir Function
+
+In [3]: nr.inventory
+Out[3]: <nornir.core.inventory.Inventory at 0x7fc10cfaabc0>
+
+In [4]: nr.inventory.hosts
+Out[4]: {'localhost1': Host: localhost1}
+
+In [5]: nr.inventory.hosts['localhost1']
+Out[5]: Host: localhost1
+
+In [6]: nr.inventory.hosts['localhost1'].hostname
+Out[6]: 'localhost'
