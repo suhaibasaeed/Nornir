@@ -1,0 +1,120 @@
+Exercise1
+
+1a. Create a simple 'hosts.yaml' file that contains a single entry for localhost. Your hosts.yaml file should look similar to the following:
+---
+localhost:
+  hostname: localhost
+
+Now create a Python script that uses InitNornir to initialize a Nornir object. Using this Nornir object print out the number of workers currently configured. This value should be 20 at this point.
+
+1b. Create a Nornir config.yaml file that sets the number of workers to 5. Modify the Python script from exercise 1a to load this config.yaml file. Print out and verify the new number of workers.
+
+1c. Use:
+
+export NORNIR_RUNNER_OPTIONS='{"num_workers": 100}'
+in the bash shell to modify the number of workers using an environment variable. Keep your Python script exactly the same as exercise1a (in other words, you should NOT have any 'runner' section in your config.yaml). Re-run your script to validate the environment variable setting is now being used.
+
+
+1d. Finally, modify the python script to set the number of workers to 15 using inline Python. Your inline Python should be similar to the following:
+nr = InitNornir(config_file="config.yaml", core={"num_workers": 15})
+Re-run the script and confirm the number of workers is now 15.
+
+From the above exercises, you should observe that the configuration order of preference was: inline python > config.yaml file > environment variable.
+
+
+Exercise2
+
+2a. Create a new configuration file named config.yaml. Using the SimpleInventory Plugin, point the host_file, the group_file, and the defaults_file to the respective files in the ~/nornir_inventory directory. This config.yaml file will be used throughout the course unless otherwise noted.
+
+Your config.yaml file should look similar to the following:
+---
+inventory:
+  plugin: SimpleInventory
+  options:
+    host_file: "~/nornir_inventory/hosts.yaml"
+    group_file: "~/nornir_inventory/groups.yaml"
+    defaults_file: "~/nornir_inventory/defaults.yaml"
+
+Filter your inventory to select ONLY devices that belong to the "ios" group.
+
+NOTE: We will cover inventory filtering later in the course, but for now, add the following to your script after initializing your Nornir object (this will filter to select only the "ios" group):
+from nornir.core.filter import F
+filt = F(groups__contains="ios")
+nr = nr.filter(filt)
+
+Print out your inventory hosts after you accomplish your filtering:
+print(nr.inventory.hosts)
+
+2b. Create a Python script that uses netmiko_send_command to execute "show run | inc hostname" on all the "ios" devices in your inventory (once again use the filter that you created in exercise 2a). Assign the result of this task to a variable named "my_results".
+
+Print the "type" of the my_results object. Additionally, inspect the my_results object using its "keys()", "items()" and "values" methods.
+
+
+2c. Assign the results from "cisco3" to a new variable named "host_results". Inspect this new MultiResult object: access the zeroith element from this MultiResult object. Finally, determine if "host_results" is an iterable or not.
+
+2d. Assign the zeroith element of the host_results object to a new variable named "task_result". What type of object is task_result? Print out the 'host', 'name', 'result', and 'failed' attributes from task_result. Which field actually contains the output from the network device?
+
+2e. Looking back at exercises 2a - 2d: explain what Nornir result types are "my_results", "host_results", and "task_result"? What purpose does each of those three data types serve (i.e. why do we have them)?
+
+
+Exercise3
+
+3. Using the Nornir filter pattern shown below and the 'netmiko_send_command' task-plugin capture the output of 'show ip arp' from all of the Cisco-IOS and Arista-EOS devices.
+
+NOTE: We will cover filtering inventory later in the course, but for now, add the following to your script after initializing your Nornir object. This will filter the Nornir hosts to be only the IOS and EOS devices:
+ios_filt = F(groups__contains="ios")
+eos_filt = F(groups__contains="eos")
+nr = nr.filter(ios_filt | eos_filt)
+
+Process the "show ip arp" results such that only the default gateway is retained from the ARP table. Note, please accomplish this exercise by handling the AggregatedResult and MultiResult in your Python program instead of using a router CLI command (i.e. do not do "show ip arp | include gateway"). In other words, the purpose of this exercise is for you to gain familiarity with handling Nornir result objects.
+
+For both exercise3 and exercise4, you can just hard-code the gateway value into your code. In other words, you do not need to dynamically determine the default gateway.
+
+Print output similar to the following to standard output (the "Host" should be the Nornir host that you retrieved the ARP data from; the "Gateway" should be the "show ip arp" gateway entry from that Host). Note, the IP address of the default gateway and its corresponding MAC address might be different in your lab environment.
+Host: cisco3, Gateway: Internet 10.220.88.1 8 0062.ec29.70fe ARPA GigabitEthernet0/0/0
+Host: cisco4, Gateway: Internet 10.220.88.1 8 0062.ec29.70fe ARPA GigabitEthernet0/0/0
+Host: arista1, Gateway: 10.220.88.1 N/A 0062.ec29.70fe Vlan1, Ethernet1
+Host: arista2, Gateway: 10.220.88.1 N/A 0062.ec29.70fe Vlan1, Ethernet1
+Host: arista3, Gateway: 10.220.88.1 N/A 0062.ec29.70fe Vlan1, Ethernet1
+Host: arista4, Gateway: 10.220.88.1 N/A 0062.ec29.70fe Vlan1, Ethernet1
+
+Exercise4
+
+4. Using a NAPALM getter instead of Netmiko, capture the ARP table output from all of the EOS and IOS devices. The NAPALM "arp_table" getter will return a list of dictionaries. In this list of dictionaries each inner-dictionary will correspond to one entry in the ARP table.
+
+Post-process the data retrieved from this NAPALM getter and print out the "host" name (for example, "cisco3", "cisco4") and the NAPALM inner dictionary corresponding to the MAC address of the default gateway. For both exercise3 and exercise4, you can just hard-code the gateway value into your code. In other words, you do not need to dynamically determine the default gateway.
+
+Your printed output should be similar to the following (note, the default gateway and MAC address in your lab environment might be different).
+Host: cisco3, Gateway: {'interface': 'GigabitEthernet0/0/0', 'mac': '00:62:EC:29:70:FE', 'ip': '10.220.88.1', 'age': 5.0}
+Host: cisco4, Gateway: {'interface': 'GigabitEthernet0/0/0', 'mac': '00:62:EC:29:70:FE', 'ip': '10.220.88.1', 'age': 5.0}
+Host: arista1, Gateway: {'interface': 'Vlan1, Ethernet1', 'mac': '00:62:EC:29:70:FE', 'ip': '10.220.88.1', 'age': 0.0}
+Host: arista2, Gateway: {'interface': 'Vlan1, Ethernet1', 'mac': '00:62:EC:29:70:FE', 'ip': '10.220.88.1', 'age': 0.0}
+Host: arista3, Gateway: {'interface': 'Vlan1, Ethernet1', 'mac': '00:62:EC:29:70:FE', 'ip': '10.220.88.1', 'age': 0.0}
+Host: arista4, Gateway: {'interface': 'Vlan1, Ethernet1', 'mac': '00:62:EC:29:70:FE', 'ip': '10.220.88.1', 'age': 0.0}
+
+Exercise5
+
+5a. Create a Nornir script that uses the netmiko_send_command task-plugin to execute "show ip int brief" on each of the devices in the "ios" group. Use the inventory filtering pattern that we used in earlier exercises. Print the output from this task using the print_results function.
+
+5b. Expanding on exercise 5a, set the 'cisco3' password attribute to an invalid value. The code to do this would be similar to the following:
+nr.inventory.hosts["cisco3"].password = 'bogus'
+
+Re-run your Nornir task and print out the "failed_hosts" using both the results object (results.failed_hosts) and the Nornir object (nr.data.failed_hosts)
+
+
+5c. Expand upon the Python program in exercise5b, this time add an additional task that runs *only* on the failed hosts.
+
+In other words, the sequence of actions should be:
+
+i. Filter your hosts to only be the "ios" hosts.
+
+ii. Set the "password" for "cisco3" to be an invalid password.
+
+iii. Execute "show ip int brief" on all of the "ios" hosts ("cisco3" will fail due to the invalid password).
+
+iv. Set the "cisco3" password back to its correct value using os.environ["NORNIR_PASSWORD"] (this environment variable will be set in the lab environment).
+
+v. Execute "show ip int brief" again, but this time execute the task only on the "failed_hosts" (i.e. cisco3). This will require that you set the "on_good" and "on_failed" arguments that are used in the Nornir .run() method.
+
+
+5d. Expand on exercise 5c except at the very end of your program, recover the failed host. Print out the global failed hosts before and after you do this. At this point there should be no failed hosts.
