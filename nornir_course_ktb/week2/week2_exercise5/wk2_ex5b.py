@@ -1,7 +1,9 @@
 """
-5a. Create a Nornir script that uses the netmiko_send_command task-plugin to execute "show ip int brief" on each of the devices in the "ios" group.
-Use the inventory filtering pattern that we used in earlier exercises.
-Print the output from this task using the print_results function.
+5b. Expanding on exercise 5a, set the 'cisco3' password attribute to an invalid value. The code to do this would be similar to the following:
+nr.inventory.hosts["cisco3"].password = 'bogus'
+
+Re-run your Nornir task and print out the "failed_hosts" using both the results object (results.failed_hosts) and the Nornir object (nr.data.failed_hosts)
+
 """
 
 from nornir import InitNornir
@@ -17,7 +19,13 @@ norn = InitNornir("config.yaml")
 ios_filt = F(groups__contains="ios")
 norn = norn.filter(ios_filt)
 
+# Set password of cisco3 to an incorrect one so task will fail
+norn.inventory.hosts["cisco3"].password = 'bogus'
+
 # Call netmiko send command plugin on IOS hosts via run() method
 my_results = norn.run(task=netmiko_send_command, command_string="show ip interface brief")
 
-print_result(my_results)
+# Print out the hosts which the tasks have failed on
+print("Failed hosts")
+print(norn.data.failed_hosts)
+print(my_results.failed_hosts)
