@@ -1,0 +1,383 @@
+(py3_venv) [ssaeed@norn8a week3_exercise5]$ python -m pdbr exercise4.py
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(1)<module>()
+----> 1 from pprint import pprint
+      2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) n
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(2)<module>()
+      1 from pprint import pprint
+----> 2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) n
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(3)<module>()
+      1 from pprint import pprint
+      2 from nornir import InitNornir
+----> 3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(4)<module>()
+      2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+----> 4 from nornir_netmiko import netmiko_send_command
+      5
+      6
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(7)<module>()
+      5
+      6
+----> 7 def main():
+      8     # Exercise 4a
+      9     nr = InitNornir(config_file="config.yaml")
+
+(Pdbr) step
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(40)<module>()
+     37     print()
+     38
+     39
+---> 40 if __name__ == "__main__":
+     41     main()
+
+(Pdbr) step
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(41)<module>()
+     37     print()
+     38
+     39
+     40 if __name__ == "__main__":
+---> 41     main()
+
+(Pdbr) step
+--Call--
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(7)main()
+      5
+      6
+----> 7 def main():
+      8     # Exercise 4a
+      9     nr = InitNornir(config_file="config.yaml")
+
+(Pdbr) step
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(9)main()
+      7 def main():
+      8     # Exercise 4a
+----> 9     nr = InitNornir(config_file="config.yaml")
+     10     # Exercise 4b
+     11     nr = nr.filter(F(groups__contains="eos"))
+
+(Pdbr) list
+      4 from nornir_netmiko import netmiko_send_command
+      5
+      6
+      7 def main():
+      8     # Exercise 4a
+----> 9     nr = InitNornir(config_file="config.yaml")
+     10     # Exercise 4b
+     11     nr = nr.filter(F(groups__contains="eos"))
+     12     agg_result = nr.run(
+     13         task=netmiko_send_command, command_string="show int status", use_textfsm=True
+     14     )
+
+(Pdbr) up
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(41)<module>()
+     37     print()
+     38
+     39
+     40 if __name__ == "__main__":
+---> 41     main()
+
+(Pdbr) next
+
+Exercise 4b - verify structured data
+--------------------
+<class 'list'>
+--------------------
+
+Exercise 4c - final dictionary
+--------------------
+{'arista1': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}},
+ 'arista2': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}},
+ 'arista3': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}},
+ 'arista4': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}}}
+--------------------
+
+None
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(41)<module>()
+     37     print()
+     38
+     39
+     40 if __name__ == "__main__":
+---> 41     main()
+
+(Pdbr) dir()
+['F', 'InitNornir', '__builtins__', '__file__', '__name__', '__return__', 'main', 'netmiko_send_command', 'pprint']
+(Pdbr) up
+None
+> <string>(1)<module>()
+
+(Pdbr) dir()
+['F', 'InitNornir', '__builtins__', '__file__', '__name__', '__return__', 'main', 'netmiko_send_command', 'pprint']
+(Pdbr) up
+> /usr/local/lib/python3.9/bdb.py(580)run()
+    578         sys.settrace(self.trace_dispatch)
+    579         try:
+--> 580             exec(cmd, globals, locals)
+    581         except BdbQuit:
+    582             pass
+
+(Pdbr) dir()
+['__main__', 'cmd', 'globals', 'locals', 'self']
+(Pdbr) step
+None
+> <string>(1)<module>()
+
+(Pdbr) step
+> /usr/local/lib/python3.9/bdb.py(584)run()
+    582             pass
+    583         finally:
+--> 584             self.quitting = True
+    585             sys.settrace(None)
+    586
+
+(Pdbr) step
+The program finished and will be restarted
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(1)<module>()
+----> 1 from pprint import pprint
+      2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) step
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(2)<module>()
+      1 from pprint import pprint
+----> 2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) step
+--Call--
+> <frozen importlib._bootstrap>(1033)_handle_fromlist()
+
+(Pdbr) step
+> <frozen importlib._bootstrap>(1043)_handle_fromlist()
+
+(Pdbr) next
+> <frozen importlib._bootstrap>(1044)_handle_fromlist()
+
+(Pdbr)
+> <frozen importlib._bootstrap>(1051)_handle_fromlist()
+
+(Pdbr) up
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(2)<module>()
+      1 from pprint import pprint
+----> 2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(3)<module>()
+      1 from pprint import pprint
+      2 from nornir import InitNornir
+----> 3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(4)<module>()
+      2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+----> 4 from nornir_netmiko import netmiko_send_command
+      5
+      6
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(7)<module>()
+      5
+      6
+----> 7 def main():
+      8     # Exercise 4a
+      9     nr = InitNornir(config_file="config.yaml")
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(40)<module>()
+     37     print()
+     38
+     39
+---> 40 if __name__ == "__main__":
+     41     main()
+
+(Pdbr) step
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(41)<module>()
+     37     print()
+     38
+     39
+     40 if __name__ == "__main__":
+---> 41     main()
+
+(Pdbr) step
+--Call--
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(7)main()
+      5
+      6
+----> 7 def main():
+      8     # Exercise 4a
+      9     nr = InitNornir(config_file="config.yaml")
+
+(Pdbr) step
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(9)main()
+      7 def main():
+      8     # Exercise 4a
+----> 9     nr = InitNornir(config_file="config.yaml")
+     10     # Exercise 4b
+     11     nr = nr.filter(F(groups__contains="eos"))
+
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(11)main()
+      9     nr = InitNornir(config_file="config.yaml")
+     10     # Exercise 4b
+---> 11     nr = nr.filter(F(groups__contains="eos"))
+     12     agg_result = nr.run(
+     13         task=netmiko_send_command, command_string="show int status", use_textfsm=True
+
+(Pdbr) dir()
+['nr']
+(Pdbr) p nr
+<nornir.core.Nornir object at 0x7fd3e1c017f0>
+(Pdbr) pp nr.inventory.hosts
+{
+│   'cisco3': Host: cisco3,
+│   'cisco4': Host: cisco4,
+│   'nxos1': Host: nxos1,
+│   'nxos2': Host: nxos2,
+│   'arista1': Host: arista1,
+│   'arista2': Host: arista2,
+│   'arista3': Host: arista3,
+│   'arista4': Host: arista4,
+│   'srx2': Host: srx2
+}
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(12)main()
+     10     # Exercise 4b
+     11     nr = nr.filter(F(groups__contains="eos"))
+---> 12     agg_result = nr.run(
+     13         task=netmiko_send_command, command_string="show int status", use_textfsm=True
+     14     )
+
+(Pdbr) pp nr.inventory.hosts
+{'arista1': Host: arista1, 'arista2': Host: arista2, 'arista3': Host: arista3, 'arista4': Host: arista4}
+(Pdbr) !temp = 'some str'
+(Pdbr) p temp
+'some str'
+(Pdbr) b 34
+Breakpoint 1 at /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py:34
+(Pdbr) continue
+
+Exercise 4b - verify structured data
+--------------------
+<class 'list'>
+--------------------
+
+Exercise 4c - final dictionary
+--------------------
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(34)main()
+     32             inner_dict["status"] = intf_dict["status"]
+     33             inner_dict["vlan"] = intf_dict["vlan"]
+1--> 34             combined_data[device_name][intf_name] = inner_dict
+     35     pprint(combined_data)
+     36     print("-" * 20)
+
+(Pdbr) pp combined_data
+{'arista1': {}}
+(Pdbr) next
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(29)main()
+     27         combined_data[device_name] = {}
+     28         device_result = multi_result[0]
+---> 29         for intf_dict in device_result.result:
+     30             intf_name = intf_dict["port"]
+     31             inner_dict = {}
+
+(Pdbr) pp combined_data
+{'arista1': {'Et1': {'status': 'connected', 'vlan': '1'}}}
+(Pdbr) clear 1
+Deleted breakpoint 1 at /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py:34
+(Pdbr) continue
+{'arista1': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}},
+ 'arista2': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}},
+ 'arista3': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}},
+ 'arista4': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'},
+             'Ma1': {'status': 'disabled', 'vlan': 'routed'}}}
+--------------------
+
+The program finished and will be restarted
+> /home/ssaeed/nornir_course/Nornir/nornir_course_ktb/week3/week3_exercise5/exercise4.py(1)<module>()
+----> 1 from pprint import pprint
+      2 from nornir import InitNornir
+      3 from nornir.core.filter import F
+      4 from nornir_netmiko import netmiko_send_command
+      5
+
+(Pdbr) exit
