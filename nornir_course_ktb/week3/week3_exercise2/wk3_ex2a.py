@@ -14,7 +14,6 @@ Print the hosts that are contained in this new Nornir object.
 
 from nornir import InitNornir
 from rich import print
-from nornir.core.filter import F
 
 # Initialise Nornir
 nr = InitNornir()
@@ -24,13 +23,4 @@ nr = InitNornir()
 arista3 = nr.filter(name='arista3')
 print(arista3.inventory.hosts)
 
-# 2b - create object by filtering on WAN role then further filter on port 22
-arista_wan = nr.filter(role='WAN')
-print(arista_wan.inventory.hosts)
-
-arista_wan_22 = arista_wan.filter(port=22)
-print(arista_wan_22.inventory.hosts)
-
-# 2c - Filter on sfo group using F object
-sfo = nr.filter(F(groups__contains='sfo'))
-print(sfo.inventory.hosts)
+# 2b - 
