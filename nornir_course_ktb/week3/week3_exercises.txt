@@ -1,0 +1,167 @@
+Revisiting Inventory
+
+1. Create a hosts.yaml file containing the following:
+---
+arista1:
+    hostname: arista1.lasthop.io
+    data:
+      role: WAN
+      site_details:
+        wifi_password: verysupersecure
+    port: 8443
+    groups:
+      - eos
+      - sfo
+
+arista2:
+    hostname: arista2.lasthop.io
+    data:
+      role: WAN
+      site_details:
+        wifi_password: racecar
+    port: 22
+    groups:
+      - eos
+      - sea
+
+arista3:
+    hostname: arista3.lasthop.io
+    data:
+      role: AGG
+    port: 8443
+    groups:
+      - eos
+      - sea
+
+Then create a Nornir groups.yaml file containing the following:
+---
+eos:
+  connection_options:
+    netmiko:
+      platform: cisco_ios
+    napalm:
+      platform: eos
+  data:
+    timezone: CET
+
+sea:
+  data:
+    state: WA
+
+sfo:
+  data:
+    state: CA
+
+1a. Create a Python script that initializes a Nornir object. Print out the "data" attribute of the "arista3" host. Call the "items()" method on host "arista3". Notice that when calling the items() method that Nornir not only displays the "data" entries associated at the host-level, but also recurses the data for the groups (that the host belongs to).
+
+1b. In the "sea" group in groups.yaml, add a "timezone" key and set the value to "PST". Print out the timezone for each of the hosts in the inventory. Without setting any data fields on the "arista3" host, modify the inventory files such that the timezone attribute for "arista3" is set to "PST".
+
+
+2. Filtering using the ".filter()" Method
+
+2a. Using the inventory files from the previous exercise, create a Nornir object that is filtered to only "arista1". Use the .filter() method to accomplish this. Print the hosts that are contained in this new Nornir object.
+
+2b. Using the filter method, create a Nornir object that is filtered to all devices using the role "WAN". Print the hosts that are contained in this new Nornir object. Further filter on this newly created Nornir object to capture only hosts using port 22. Once again, print the hosts in this new Nornir object.
+
+2c. Using an F-filter, create a new Nornir object that contains all the hosts that belong to the "sfo" group. Print the hosts that are contained in this new Nornir object.
+
+
+3. Filtering using F-filters
+
+3a. Using an F-filter, create a Nornir object that is the hosts belonging to the role "AGG". Print the hosts that are contained in this new Nornir object.
+
+3b. Using an F-filter, create a Nornir object of devices that are members of either the "sea" or (union) the "sfo" group. Print the hosts that are contained in this new Nornir object.
+
+3c. Using an F-filter, create a Nornir object that contains devices that belong to the "WAN" role and (intersection) have a WIFI password of "racecar". Note, for a nested dictionary key inside data, you can use the following pattern:
+F(site_details__wifi_password__contains="whatever")
+
+Where the corresponding section of inventory is:
+data:
+  site_details:
+    wifi_password: whatever
+
+3d. Modify the filter from exerice3c such that you retrieve the devices that do NOT have a wifi password of "racecar".
+
+
+4. Netmiko + TextFSM
+
+4a. Create a "config.yaml" file that points to the hosts, groups and defaults inventory files in the ~/nornir_inventory directory. Your config.yaml file should be the following:
+---
+inventory:
+  plugin: nornir.plugins.inventory.simple.SimpleInventory
+  options:
+    host_file: "~/nornir_inventory/hosts.yaml"
+    group_file: "~/nornir_inventory/groups.yaml"
+    defaults_file: "~/nornir_inventory/defaults.yaml"
+
+Create a Python script that creates a new Nornir object from inventory using the above config.yaml file. 
+
+4b. From your Nornir object in exercise4a, add a filter and select only the "eos" group. Using the "netmiko_send_command" task-plugin, execute "show interface status" command against this "eos" group. Ensure that you receive structured data back from Netmiko.
+
+4c. From the results in exercise4b, process the interface table for all of the devices and create a single final dictionary. The primary dictionary keys of this final dictionary should be the switch names. The switch name keys should point to an inner dictionary. The inner dictionary should have the interface names as keys and point to another internal dictionary. This last internal dictionary should have keys of "status" and "vlan". See the full dictionary structure below. Pretty print the output, your final dictionary should look similar to the following:
+{'arista1': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'}},
+ 'arista2': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'}},
+ 'arista3': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'}},
+ 'arista4': {'Et1': {'status': 'connected', 'vlan': '1'},
+             'Et2': {'status': 'connected', 'vlan': '2'},
+             'Et3': {'status': 'connected', 'vlan': '3'},
+             'Et4': {'status': 'connected', 'vlan': '4'},
+             'Et5': {'status': 'connected', 'vlan': '5'},
+             'Et6': {'status': 'connected', 'vlan': '6'},
+             'Et7': {'status': 'connected', 'vlan': '7'}}} 
+
+5. Using Pdb with Nornir
+
+5a. Copy the reference solution provided in exercise4 and execute it using pdbr (alternatively, use 'ipdb' or 'pdb'):
+python -m pdbr exercise4.py
+
+5b. Use the "list" command to show the lines surrounding the main function definition. Use the "list" command to show lines 30 to 41. Note, pdbr currently does not allow you to perform lists around specified line numbers so you would need to use ipdb or pdb for this (or alternatively use the "ll" command for a long list).
+
+5c. Using the "next" command, step through the program up to the "main()" function call. At that point, "step" into the main function. Continue "stepping" into the InitNornir function. Execute a "list" inside the InitNornir function. At this point, go back "up" to the "main" function of your script.
+
+5d. Use "next" to execute the creation of the Nornir object named "nr", and then print out this "nr" object. After you have printed this "nr" object, use pretty-print to display "nr.inventory.hosts".
+
+5e. Continue executing "next" past the filtering of your Nornir object (i.e. where you filter on the "eos" group membership), once again pretty-print nr.inventory.hosts. At this point you should see only the Arista hosts in your filtered Nornir inventory.
+
+5f. Create a variable named "temp"; assign some string to this variable. Remember, the general pattern for executing arbitrary Python from inside of Pdb is to prefix the Python code with an exclamation point. Note, on newer versions of Pdb you can frequently get away without the exclamation point (unless you happen to run into a conflict between your Python code and the internal Pdb commands).
+
+5g. Set a breakpoint at line 34 of the script; "continue" to this breakpoint. Execute "continue" one more time. Pretty-print "combined_data" at this point. List your code again. Use the 'clear 1' command to clear the breakpoint. Use 'continue' to complete execution of the script. The script should have been completed at this point. "exit" from Pdb.
+
+
+6. NAPALM Getters Expanded
+
+6a. Using the config.yaml file from exercise 4, create a new Nornir object that filters to only the "nxos" devices. Using the "napalm_get" task-plugin, retrieve the configuration from these devices. Print the results of this task.
+
+6b. Filter the napalm "get" to capture only the running configuration. Print the results of the task.
+
+6c. Modify the script to get the running configuration AND facts from the device. Once again, print the results.
+
+6d. Finally, modify the code to capture all configurations (continue to use the "getters_options"), and the facts. For each device, parse the data and indicate whether the startup and running configs match and print out this information along with some of the basic device information. Your output should be similar to the following:
+{'nxos1': {'model': 'Nexus9000 9000v Chassis',
+           'start_running_match': True,
+           'uptime': 7172937,
+           'vendor': 'Cisco'},
+ 'nxos2': {'model': 'Nexus9000 9000v Chassis',
+           'start_running_match': True,
+           'uptime': 7172474,
+           'vendor': 'Cisco'}}
+
+*Note* startup and running config contain timestamps--remove those timestamps before comparing the configurations!
