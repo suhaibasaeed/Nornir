@@ -1,0 +1,78 @@
+Exercise1
+
+1a. Create a custom task that uses the 'netmiko_send_command' task-plugin to query all of the lab devices for their uptime. This task will require that you execute different commands based on the platform (see the table below):
+Platform                    Command
+--------                    -----------
+Cisco IOS/NX-OS             show version | inc uptime
+Arista                      show version | inc Uptime
+Juniper SRX                 show system uptime | match System
+
+Print out the Nornir device name and the uptime string for each of the hosts.
+
+
+1b. Process the returned uptime string and convert it over to uptime seconds. If the uptime is less than 1 day, then print out a notice that the device recently rebooted.
+
+Note, you can skip the uptime string conversion for the Juniper device and just have it return a value of 90 seconds for the "uptime seconds" (in other words, artificially pretend that the Juniper device just rebooted).
+
+For reference, you can re-use the function referenced here to assist you with this exercise. You will need to make modifications to this function, however (technically in NAPALM "parse_uptime" is a static method, but we recommend that you copy this and convert it to a normal function in your program):
+
+https://github.com/napalm-automation/napalm/blob/2.4.0/napalm/ios/ios.py#L894
+
+
+
+Exercise2
+
+2a. Create a new directory named "eos". In this "eos" directory create a file named "arista_test.txt". In this "arista_test.txt" file add some unique content that you will be able to identify. This unique content will let verify that your particular file was transferred to the remote device.
+
+Next, copy the hosts.yaml, groups.yaml, and defaults.yaml files from ~/nornir_inventory to your current directory. Modify the groups.yaml file and add the following to the "eos" group:
+  data:
+    file_name: arista_test.txt
+
+Now, using the "netmiko_file_transfer" task-plugin, secure copy your arista_test.txt file to all of the Arista switches in the lab environment.
+
+Please use the "platform" attribute from inventory to specify the directory name. Additionally, please use the "file_name" variable from inventory. In other words, construct "eos/arista_test.txt" entirely from inventory information.
+
+Note, you will want to pass the following argument into the "netmiko_file_transfer" task-plugin:
+    overwrite_file=True,
+
+This will allow the "netmiko_file_transfer" task-plugin to overwrite the file if it already exists.
+
+
+2b. Repeat exercise2a except now create a custom task that performs both a file transfer and a verify operation. The custom_task should execute the "netmiko_file_transfer" task-plugin (as before) and should also execute the following command (using the "netmiko_send_command" task-plugin):
+more flash:/arista_test.txt
+Your program should print the contents of the remote file to the screen.
+
+
+2c. Create a Nornir script that copies "arista_test.txt" from each of the remote Arista devices (secure copy, "get" operation) and saves the file as "eos/{device_name}-saved.txt" where {device_name} is the Nornir device name.
+
+
+
+Exercise3
+
+3a. Create a script with a custom task that accepts a vlan_id and a vlan_name as arguments. Utilize the "netmiko_send_config" task-plugin to send the VLAN configuration to the "eos" and "nxos" hosts.
+
+3b. Within your custom task, add logic to see if the desired VLAN configuration already exists on each device.
+
+If the VLAN name and the VLAN ID already exist, then do NOT send the configuration commands. Instead just return a message indicating no changes are necessary. If the necessary configurations do not exist, then execute the configuration changes.
+
+3c. Modify your custom task to return a Nornir Result object. Set the value of changed, failed, and result. These values should correspond to what happened in the custom task.
+
+
+
+Exercise4
+
+4a. Write a script with a custom task that uses "napalm_configure" to deploy the same VLAN configuration as exercise 3.
+
+4b. Modify your custom task to add a keyword argument for the "dry_run" setting. Set this argument to False by default. In the main part of your program call this custom task and test both dry_run=True and dry_run=False. Note, for napalm_configure and dry_run=True, NAPALM will not actually make any configuration changes--instead NAPALM and Nornir will report whether any changes would have been made.
+
+
+
+Exercise5
+
+5a. Write a script that captures the running configuration from "arista4" using the NAPALM "config" getter. Print this configuration out to the screen.
+
+5b. Use napalm_configure to add a new loopback interface to the "arista4" device. Your configuration should be similar to the following:
+interface Loopback123
+   description Hello
+
+5c. Create a new program that combines both exercise5a and exercise5b. First, retrieve the current running configuration from Arista4, then configure the loopback interface. Finally, use "napalm_configure" and the full configuration replace operation to restore the previously captured running configuration. The net effect of this last step should be to remove the loopback configuration (i.e. to restore the running configuration to its original state).
