@@ -1,13 +1,10 @@
 """
-1a. Create a custom task that uses the 'netmiko_send_command' task-plugin to query all of the lab devices for their uptime.
-This task will require that you execute different commands based on the platform (see the table below):
-Platform                    Command
---------                    -----------
-Cisco IOS/NX-OS             show version | inc uptime
-Arista                      show version | inc Uptime
-Juniper SRX                 show system uptime | match System
+1b. Process the returned uptime string and convert it over to uptime seconds.
+If the uptime is less than 1 day, then print out a notice that the device recently rebooted.
 
-Print out the Nornir device name and the uptime string for each of the hosts.
+Note, you can skip the uptime string conversion for the Juniper device.
+Just have it return a value of 90 seconds for the "uptime seconds"
+(in other words, artificially pretend that the Juniper device just rebooted).
 """
 
 from nornir import InitNornir
@@ -15,6 +12,8 @@ from nornir_utils.plugins.functions import print_result
 from nornir_netmiko import netmiko_send_command
 from nornir.core.filter import F
 from nornir.core.task import Result
+from parse import parse_uptime # Function from KTB
+from re import search
 
 
 # Custom task which gets uptime of device
@@ -31,9 +30,19 @@ def device_uptime(task):
     # Execure task serially against devices
     result = task.run(task=netmiko_send_command, command_string=cmd)
     
-    # Print host and result - Parse through list like MultiResult object
-    print(task.host.name)
-    print(result[0].result)
+    # Use re to match on only actual uptime and remove everything else
+    uptime = search(r'\s\d+.*', result[0].result) # Result attribute
+
+    # Pass uptime into function to get uptime in seconds - index 0 as we're returned list
+    uptime_sec = parse_uptime(uptime[0])
+    # If device is SRX2 just manually set uptime in seconds
+    if task.host.name == "srx2":
+        uptime_sec = 90
+    # If uptime is under a day
+    if uptime_sec < 86400:
+        print(f"{task.host.name} rebooted within the last day")
+    else:
+        print(f"{task.host.name} has been up for longer than a day")
     
 
 if __name__ == "__main__":
@@ -42,6 +51,7 @@ if __name__ == "__main__":
     nr = InitNornir("config.yaml")
     # Execute custom task against hosts in inventory
     results = nr.run(task=device_uptime, name="Get device uptime")
+
 
 
 
