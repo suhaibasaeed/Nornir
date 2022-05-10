@@ -14,7 +14,7 @@ def file_copy(task):
     # Get platform name and source/dest filenames - used for file path
     platform = task.host.platform
     source_file = "arista_test.txt" # Filename on network device
-    dest_file = f"{platform}/{task.host}"
+    dest_file = f"{platform}/{task.host}-saved.txt"
     
     # Transfer the file
     results = task.run(
