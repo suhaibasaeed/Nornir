@@ -16,7 +16,6 @@ Your output should be similar to the following:
 Startup and running config contain timestamps--remove those timestamps before comparing the configurations!
 """
 
-from operator import truediv
 from rich import print
 from nornir import InitNornir
 from nornir.core.filter import F
