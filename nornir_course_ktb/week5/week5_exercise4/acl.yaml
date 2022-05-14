@@ -1,0 +1,17 @@
+---
+my_acl:
+  - protocol: tcp
+    destination_port: 22
+    destination_address: 1.2.3.4/32
+    term_name: SSH
+    state: accept
+  - protocol: tcp
+    destination_port: 443
+    destination_address: 1.2.3.4/32
+    term_name: HTTPS
+    state: accept
+  - protocol: tcp
+    destination_port: 443
+    destination_address: 1.2.3.4/32
+    term_name: DISCARD_HTTPS
+    state: discard
