@@ -1,0 +1,35 @@
+Videos:
+
+The video password is: Luna22
+
+I. Nornir Inventory Review
+Video https://vimeo.com/343073227
+Length is 3 minutes
+
+II. Inventory Resolution
+Video https://vimeo.com/342140756
+Length is 7 minutes
+
+III. Inventory Filtering
+Video https://vimeo.com/343321751
+Length is 14 minutes
+
+IV. Resolution and Filtering Extras
+Video https://vimeo.com/346897621
+Length is 4 minutes
+
+V. Pdb and Nornir
+Video https://vimeo.com/347213513
+Length is 17 minutes
+
+VI. Nornir, Netmiko and TextFSM (Part1)
+Video https://vimeo.com/349548113
+Length is 8 minutes
+
+VII. Nornir, Netmiko and TextFSM (Part2)
+Video https://vimeo.com/349551883
+Length is 4 minutes
+
+VIII. NAPALM Getters Expanded
+Video https://vimeo.com/343751452
+Length is 7 minutes
