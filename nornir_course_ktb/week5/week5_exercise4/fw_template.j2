@@ -1,0 +1,6 @@
+{% for entry in entries %}
+set firewall family inet filter {{ filter_name }} term {{ entry.term_name }} from protocol {{ entry.protocol }}
+set firewall family inet filter {{ filter_name }} term {{ entry.term_name }} from destination-port {{ entry.destination_port }}
+set firewall family inet filter {{ filter_name }} term {{ entry.term_name }} from destination-address {{ entry.destination_address }}
+set firewall family inet filter {{ filter_name }} term {{ entry.term_name }} then {{ entry.state }}
+{% endfor %}
