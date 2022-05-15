@@ -1,0 +1,5 @@
+router bgp {{ bgp.bgp_asn }}
+  router-id {{ bgp.bgp_router_id }}
+  neighbor {{ bgp.bgp_peer }}
+    remote-as {{ bgp.bgp_remote_asn }}
+    address-family ipv4 unicast
