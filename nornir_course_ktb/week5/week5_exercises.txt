@@ -1,0 +1,108 @@
+Exercise 1 - Generic Data
+1a. Copy the hosts.yaml and groups.yaml files from ~/nornir_inventory into your working directory. Create a "config.yaml" file that points to the copied hosts.yaml and groups.yaml files.  The config.yaml file should still reference the "defaults.yaml" file in ~/nornir_inventory.
+
+1b. Add a "data" field to both the "cisco3" and "cisco4" hosts (in hosts.yaml). Inside of this "data" field add a key named "snmp_id" with a corresponding value that you select. Add a "data" field into the "eos" group in groups.yaml. Once again, inside of this "data" field add a key named "snmp_id" with a corresponding value that you select.
+
+1c. Write a custom task that uses the netmiko_send_config task-plugin to configure the SNMP chassis ID for all of the Cisco IOS and Arista EOS devices. For the IOS devices use the "snmp_id" value in hosts.yaml. For the EOS devices, configure the chassis ID to be the "snmp_id" attribute plus the name of the device (Nornir inventory name). The EOS devices should be pulling the base snmp_id attribute from groups.yaml.
+
+The syntax for the Cisco IOS devices is as follows:
+
+   snmp-server chassis-id YOURSTRING
+
+And for the Arista EOS devices:
+
+   snmp chassis-id YOURSTRING-name
+
+
+Exercise 2 - ConnectionOptions
+
+2a. Copy the "defaults.yaml" file from ~/nornir_inventory into your working directory. Create a config.yaml file to use this new "defaults.yaml" file as well as the hosts.yaml and groups.yaml files from exercise1. Using defaults.yaml, set a default port of "22" for all of your hosts.
+
+2b. Create a Python script. In this script, initialize Nornir and filter the inventory to just the eos" devices. Next use the "napalm_get" task-plugin and use the "config" getter to retrieve the configuration of the eos devices. Execute the script--at this point the script should fail as the eAPI port is not port 22!
+
+2c. Modify your "groups.yaml" file such that your script succeeds.
+
+
+
+Exercise 3 - Additional Data
+
+3a. Create a JSON or a YAML file that contains the required data to construct three ACL entries for Juniper. It should be similar to the following (in terms of the data structure and required fields):
+
+---
+my_acl:
+  - protocol: tcp
+    destination_port: 22
+    destination_address: 1.2.3.4/32
+    term_name: rule1
+    state: accept
+  - protocol: tcp
+    destination_port: 443
+    destination_address: 1.2.3.4/32
+    term_name: rule2
+    state: accept
+  - protocol: tcp
+    destination_port: 443
+    destination_address: 1.2.3.4/32
+    term_name: rule3
+    state: discard
+
+3b. Filter the Nornir inventory to just the srx2 device. Write a custom task to generate the firewall rules for each entry in the YAML/JSON file. Print the generated rules to your standard output. Your output should look as follows:
+set firewall family inet filter my_acl term rule1 from protocol tcp
+set firewall family inet filter my_acl term rule1 from destination-port 22
+set firewall family inet filter my_acl term rule1 from destination-address 1.2.3.4/32
+set firewall family inet filter my_acl term rule1 then accept
+set firewall family inet filter my_acl term rule2 from protocol tcp
+set firewall family inet filter my_acl term rule2 from destination-port 443
+set firewall family inet filter my_acl term rule2 from destination-address 1.2.3.4/32
+set firewall family inet filter my_acl term rule2 then accept
+set firewall family inet filter my_acl term rule3 from protocol tcp
+set firewall family inet filter my_acl term rule3 from destination-port 443
+set firewall family inet filter my_acl term rule3 from destination-address 1.2.3.4/32
+set firewall family inet filter my_acl term rule3 then discard
+
+You do not need to push these configuration changes out to the SRX.
+
+
+
+Exercise 4 - Jinja2 Templating
+
+4a. In a new script, create a Jinja2 representation of the ACL from the previous task; this Jinja2 template should just be an embedded string in your script. Using the same external YAML/JSON file for source data, construct the ACL from the previous task, render it, and print this ACL out to standard output. Your output should be identical to the output of exercise3.
+
+4b. Create an "acl.j2" file that is the Jinja2 representation of the ACL from the previous task. Recreate your script from exercise4a except use the external Jinja2 file for the template. Your output should once again be the fully generated ACL.
+
+4c. Add a step to your custom task to render the ACL and store the rendered value as an attribute of the "srx2" host (in other words, store the ACL data in the Nornir host object). Once again print the fully rendered ACL to standard out (this time using the host object attribute where you stored the ACL data).
+
+
+
+Exercise 5 - Jinja2 Templating + Configuration Push
+
+5a. Create a new directory named "nxos". In this directory, create a Jinja2 BGP template for the NX-OS platform. This template should contain variables for AS Number, BGP router-ID, and a basic peering setup. Your BGP template should look similar to the following:
+router bgp {{ bgp_asn }}
+  router-id {{ bgp_router_id }}
+  neighbor {{ bgp_peer }}
+    remote-as {{ bgp_remote_asn }}
+    address-family ipv4 unicast
+
+Additionally, create a simple interface template with variables for interface name, IP address, and subnet mask. Your interface template should look similar to the following:
+interface {{ int_name }}
+ no switchport
+ ip address {{ ip_address }} {{ ip_mask }}
+ no shutdown  
+
+
+5b. Copy the "hosts.yaml" file from ~/nornir_inventory into your working directory. Create a config.yaml file that uses this new "hosts.yaml" file. Both the "groups.yaml" and the "defaults.yaml" files should continue to be the standard ~/nornir_inventory files. In your new hosts.yaml file add all the necessary variables to render the two Jinja2 templates. These variables should all be added into the "data" attribute for nxos1 and nxos2.
+
+Additional details on the required variables:
+
+"bgp_asn" use a value of 22
+"int_name" select a random interface from Ethernet1/1 through Ethernet1/4 (choose the same interface for both nxos1 and nxos2)
+For IP addressing use something from RFC1918 such as a random /24 from the 172.20.0.0/16 range
+
+Note, the end goal is to have a working BGP peering session between nxos1 and nxos2. Consequently, you need to choose the same Ethernet interface for both nxos1 and nxos2. You also need to choose the same IP subnet for nxos1 and nxos2. Finally your BGP peering information needs to match your IP address information.
+Create another new directory named "rendered_configs" and write these rendered configuration to disk (four total rendered files: a BGP file and an interface file for each nxos host). Validate that the configurations look correct.
+
+
+
+5c. Using NAPALM configure, read the stored configurations from the rendered_configs directory and deploy the configurations to the nxos hosts. Use a NAPALM merge operation for this task.
+
+Use the NAPALM "bgp_neighbors" getter to verify that your BGP peering session becomes established. Note, you might need to add a time.sleep delay between the configuration step and the verification step (in other words allow the BGP session sufficient time to reach the established state).
