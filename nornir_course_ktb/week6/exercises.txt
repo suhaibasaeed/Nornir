@@ -1,0 +1,134 @@
+​Exercises:
+
+Our solutions to the exercises can be found at:
+
+https://github.com/twin-bridges/nornir_course/tree/master/bonus1/exercises
+
+
+Exercise1
+
+1a. Create an Ansible-style inventory with the following characteristics--the main "inventory.yaml" file should be as follows:
+
+inventory.yaml:
+---
+all:
+  children:
+    nxos:
+      hosts:
+        nxos1:
+          ansible_host: nxos1.lasthop.io
+        nxos2:
+          ansible_host: nxos2.lasthop.io
+
+The "nxos.yaml" and "all.yaml" files should be in a directory named "group_vars" and should be as follows:
+
+nxos.yaml
+---
+platform: nxos
+
+connection_options:
+  netmiko:
+    platform: cisco_nxos
+    extras: {}
+  napalm:
+    port: 8443
+    extras:
+      optional_args: {}
+
+
+all.yaml
+---
+username: pyclass
+password: bogus
+     
+Create a Nornir "config.yaml" file that is setup to use the Ansible inventory plugin. It should be as follows:
+inventory:
+  plugin: AnsibleInventory
+  options:
+    hostsfile: "inventory.yaml"
+
+Create a Nornir script that uses this Ansible-style inventory. In this script, print the username, password, port, and platform for one of the NX-OS hosts. Note, the port will be "None" because it has not been set at the host or group inventory level. Lastly, use the "get_connection_parameters" method to obtain and print the NAPALM port number (to ensure that it is 8443).
+
+
+1b. Write a simple task to run the "ntp_servers" getter against the NX-OS devices (this will confirm NAPALM and NX-API is working properly). Use the "print_result" function to print out your results.
+
+
+Exercise2
+ 
+2a. Copy the `ansible-hosts` file from your user directory. This Ansible inventory file contains all of the hosts for the course's lab environment; however, it is *not* setup for Nornir. In other words, the "connection_options" are not configured. Write a transform function (or loop over the Nornir Host objects) that converts this Ansible inventory such that this inventory could be used with a Netmiko task. This task will require several steps:
+
+Setting the Nornir host "password" to the value of "ansible_ssh_pass" (which is set in the "all" group in the ansible-hosts inventory).
+Setting the "platform" value for the Netmiko connection_options
+Set the "extras > global_delay_factor" for the Arista devices to a value of 2
+
+Run a simple Netmiko send command task that validates that the transform_function and the inventory are working properly. Use the "show version" command as this will succeed on all of the platforms. You should exclude "localhost" from the set of hosts for this task.
+
+
+2b. Expanding on exercise 2a, update the transform function (or host-object loop equivalent) such that the connection options also support NAPALM tasks. This will require:
+
+Setting the "platform" value for the NAPALM connection_options
+Update the NX-OS port value to 8443
+
+Create a Nornir script that uses this new transform_function. In your Nornir script, filter your inventory down to only the "nxos" group. Execute a NAPALM "get_facts" against the two NX-OS devices and confirm that the NAPALM task is working properly.
+
+
+
+Exercise3
+
+Create a Nornir script that contains a custom task. This custom task should directly create a Netmiko connection and retrieve the router/switch prompt for each device in inventory (use Netmiko's find_prompt method). For the Cisco IOS devices use SSH keys for authentication.
+
+For SSH keys, you should have the following files available in the lab environment:
+-rw-------  1 user group 3243 Sep 19 09:27 student_key
+-rw-r--r--  1 user group  739 Sep 19 09:27 student_key.pub
+
+These files are located in the "~/.ssh/" directory (in other words, your home directory, then .ssh--note, the leading period).
+
+You will need to use a username of "student1" with this SSH key.
+
+
+
+Exercise4
+
+Create a Nornir script that uses the "netmiko_file_transfer" task-plugin to transfer a small text file to one of the NX-OS devices. After the file has been transferred, then create a custom Nornir task that uses Netmiko to delete this file. This custom task should do the following:
+
+* Directly establish a Netmiko connection to the NX-OS device using "get_connection" (technically, it will be reusing the connection that was created in the netmiko_file_transfer task).
+* Use the command "del bootflash:/{filename}" where {filename} is the name of the file you earlier transferred to the NX-OS device.
+
+The delete command will prompt you as follows:
+    nxos1# del bootflash:/testx.txt
+    Do you want to delete "/testx.txt" ? (yes/no/abort)   [y] y
+
+You will need to use Netmiko's send_command_timing method to handle these prompts.
+
+
+
+Exercise 5
+
+5a. Create a custom task that retrieves a "checkpoint" from both of the NX-OS devices. This custom task should create a direct NAPALM connection and should call the NAPALM _get_checkpoint_file() method.
+
+Store the checkpoint in a host variable named "backup".
+
+The script should print the checkpoint output to standard output using "print_result".
+
+
+ 5b. Modify your solution to write the checkpoint files out to the file system. The files should be written to:
+
+backups/nxos1_checkpoint
+backups/nxos2_checkpoint
+
+Your script should automatically create the "backups" directory if it doesn't already exist.
+
+
+
+Exercise 6
+
+Modify your Nornir "groups.yaml" file such that the NX-OS hosts will use SSH for NAPALM tasks instead of the NX-API.
+
+Create a Nornir script with a custom task for "nxos1". This custom task should do the following:
+Directly establish a NAPALM connection to nxos1 using nxos_ssh.
+Prints this NAPALM connection object to standard output.
+Retrieves an object for the underlying driver that NAPALM uses (this is accessed at napalm_conn.device). In this case, that underlying driver will be an SSH connection using Netmiko.
+Prints the underlying driver object to standard output (i.e. the Netmiko connection object).
+Print the output of the find_prompt() method on this underling Netmiko connection object.
+
+The above will demonstrate how to get at the underlying connection that NAPALM uses (this could be PyEZ, eAPI, Netmiko, et cetera). In this case, the underlying connection object is a Netmiko connection object.
