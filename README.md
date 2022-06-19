@@ -1,5 +1,3 @@
 # Nornir
-Nornir scripts I've created from CBT and KTB courses
-
-## KTB Nornir Course
+Nornir scripts I've created from KTB Nornir course exercises. 
 Python 3.9 used
