@@ -1,0 +1,4 @@
+inventory:
+  plugin: AnsibleInventory
+  options:
+    hostsfile: "ansible-hosts.ini"
