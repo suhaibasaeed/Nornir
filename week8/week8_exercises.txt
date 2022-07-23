@@ -1,0 +1,59 @@
+Exercise Description - BGP Exercise
+
+The goal of this week's exercise is to create a "BGP peer manager" utility using Nornir and many of the skills you've learned throughout the course. This "bgp peer manager" tool should:
+Manage all BGP configurations on a device including:
+BGP AS-Number
+BGP Router-ID
+Support configuring IPv4 unicast network statements (for adding networks to the BGP table)
+Configure BGP neighbors
+BGP neighbor description
+Neighbor remote-as
+Applying route-maps for the IPv4 unicast address family
+ 
+Manage all route-maps related to BGP
+ 
+Manage all prefix-lists related to BGP
+
+If possible, you should do all of the above in an idempotent manner. In other words, changes to the device should only happen if the device's current end-state doesn't match the desired end-state. This also implies that your Nornir script could be executed over-and-over again without any additional changes happening (and without the script failing). These items will possibly lead you to using a full-configuration replace and NAPALM.
+
+Additionally, your configuration should work in both the case where the "router bgp 22" exists and where it doesn't exist (as far as starting configuration state). Similarly, your configuration should work if the starting config has or doesn't have your route-maps or prefix-lists.
+
+Finally, you should not have configuration drift in your solution i.e. executing your playbook over and over again should result in the same end configuration.
+
+Note, in our reference solution we have one step that configures loopbacks that is not idempotent (**cough, **cough...yeah, we probably should convert this to an idempotent pattern, but we viewed it as secondary to the goal/problem that we were trying to solve).
+
+
+Note, a reference NX-OS BGP configuration is included below. It is not expected that you know BGP configuration syntax on NX-OS and that is tangential to the purposes of this exercise.
+
+
+Videos IV, V, and VI detail the problem that this BGP utility should solve. Additionally, in those videos, we sketch out some of the pseudo-code that should help you build your own version of this tool.
+
+
+Note, while we say this is a "completed" version of the script; the script is not "production-ready"! As we mention in the closing videos, there is a great deal more that should be done, particularly related to testing and validation.
+
+Also, as we mention in the final video, NAPALM provides the capability of performing a "dry_run" and generating a "diff" file. These are very handy tools to keep in your tool belt, and they work very well with the configuration replacement pattern!
+
+
+
+BGP Reference Configuration (with some comments)
+# Use ASN=22 for both nxos1 and nxos2
+router bgp 22
+  router-id 172.31.101.101
+  address-family ipv4 unicast
+    # Networks to potentially advertise
+    network 172.31.101.101/32
+    network 172.31.102.101/32
+  # Remote BGP Peers
+  neighbor 172.31.254.2
+    remote-as 22
+    description configured by nornir
+    address-family ipv4 unicast
+      # Bind to a route-map
+      route-map RM_BGP_NXOS2_Peer out
+
+# Route-map entries (should reference a prefix-list)
+route-map RM_BGP_NXOS2_Peer permit 100
+  match ip address prefix-list PL_BGP_Loopback101 
+
+# Prefix-list entries
+ip prefix-list PL_BGP_Loopback101 seq 5 permit 172.31.101.101/32
