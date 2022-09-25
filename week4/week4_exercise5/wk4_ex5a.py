@@ -16,5 +16,5 @@ nr = InitNornir('config.yaml')
 arista4 = nr.filter(name='arista4')
 
 # Use config getter task-plugin to get configuration from devices in group
-results = arista4.run(task=napalm_get, getters=['config'])
+results = arista4.run(task=napalm_get, getters=['config'], retrieve="running")
 print_result(results)
