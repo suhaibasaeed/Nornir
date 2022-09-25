@@ -22,7 +22,7 @@ def render_loopintf(task):
       **task.host)
     # Catch exception from jinja2 rendering
     except NornirSubTaskError:
-      print('Subtask error')
+      print('Templating error occurred')
     
 if __name__ == "__main__":
 
