@@ -12,7 +12,7 @@ from nornir.core.filter import F
 from nornir_utils.plugins.functions import print_result
 from nornir.core.task import Result
 
-# Subtask
+# Custom task
 def vlan_check_configure(task, vlan_id, vlan_name):
 
     # Set default is False as it should only be true if command executed
