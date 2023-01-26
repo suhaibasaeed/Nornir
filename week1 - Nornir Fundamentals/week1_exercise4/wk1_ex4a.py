@@ -13,5 +13,6 @@ norn = InitNornir()
 def a_task(task):
     print("Hey")
 
+
 # Use run method to execute task against hosts and pass in task
 norn.run(task=a_task)

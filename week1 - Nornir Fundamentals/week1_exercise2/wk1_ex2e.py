@@ -20,4 +20,4 @@ for i in hosts:
     print(hosts[i].platform)
     print(hosts[i].username)
     print(hosts[i].password)
-    print('-' * 10)
+    print("-" * 10)

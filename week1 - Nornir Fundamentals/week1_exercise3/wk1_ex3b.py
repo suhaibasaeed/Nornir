@@ -13,11 +13,11 @@ norn = InitNornir()
 # Get hosts object
 hosts = norn.inventory.hosts
 
-# Loop through dictionary of hostobjects and get attributes - 
+# Loop through dictionary of hostobjects and get attributes -
 for i in hosts:
     print(hosts[i].hostname)
     print(hosts[i].groups)
     print(hosts[i].platform)
     print(hosts[i].username)
     print(hosts[i].password)
-    print('-' * 10)
+    print("-" * 10)

@@ -18,5 +18,6 @@ def a_task(task):
     dev_name = task.host.hostname
     print(f"Hey {dev_name}")
 
+
 # Use run method to execute task against hosts and pass in task
 norn.run(task=a_task)

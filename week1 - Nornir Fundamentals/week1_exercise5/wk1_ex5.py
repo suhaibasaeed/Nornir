@@ -22,8 +22,12 @@ def a_task(task):
     # Get hostname from task object
     dev_name = task.host.hostname
     # Get DNS servers from defaults.yml data and hosts.yml data - we have to specify key as cisco3 overrides dns1 at host level
-    dns_servers = [norn.inventory.hosts[str(task.host)]['dns1'], norn.inventory.hosts[str(task.host)]['dns2']]
-    print(f"Hey {dev_name} your DNS servers are {dns_servers}" )
+    dns_servers = [
+        norn.inventory.hosts[str(task.host)]["dns1"],
+        norn.inventory.hosts[str(task.host)]["dns2"],
+    ]
+    print(f"Hey {dev_name} your DNS servers are {dns_servers}")
+
 
 # Use run method to execute task against hosts and pass in task
 norn.run(task=a_task)
