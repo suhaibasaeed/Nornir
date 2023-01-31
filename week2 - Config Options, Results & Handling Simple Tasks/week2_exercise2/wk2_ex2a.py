@@ -11,7 +11,9 @@ print(nr.inventory.hosts)
 """
 
 from nornir import InitNornir
-from nornir.core.filter import F # Import F class which will be used for filtering inventory
+from nornir.core.filter import (
+    F,
+)  # Import F class which will be used for filtering inventory
 from rich import print
 
 # Create norn object by initialising Nornir - Pass in config file
@@ -23,4 +25,3 @@ norn = norn.filter(ios_filt)
 
 # Print inventory
 print(norn.inventory.hosts)
-

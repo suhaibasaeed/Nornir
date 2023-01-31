@@ -7,7 +7,9 @@ Re-run your Nornir task and print out the "failed_hosts" using both the results 
 """
 
 from nornir import InitNornir
-from nornir.core.filter import F # Import F class which will be used for filtering inventory
+from nornir.core.filter import (
+    F,
+)  # Import F class which will be used for filtering inventory
 from rich import print
 from nornir_netmiko import netmiko_send_command
 from nornir_utils.plugins.functions import print_result
@@ -20,10 +22,12 @@ ios_filt = F(groups__contains="ios")
 norn = norn.filter(ios_filt)
 
 # Set password of cisco3 to an incorrect one so task will fail
-norn.inventory.hosts["cisco3"].password = 'bogus'
+norn.inventory.hosts["cisco3"].password = "bogus"
 
 # Call netmiko send command plugin on IOS hosts via run() method
-my_results = norn.run(task=netmiko_send_command, command_string="show ip interface brief")
+my_results = norn.run(
+    task=netmiko_send_command, command_string="show ip interface brief"
+)
 
 # Print out the hosts which the tasks have failed on
 print("Failed hosts")

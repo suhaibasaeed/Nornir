@@ -9,12 +9,14 @@ In other words, you do not need to dynamically determine the default gateway.
 """
 
 from nornir import InitNornir
-from nornir.core.filter import F # Import F class which will be used for filtering inventory
+from nornir.core.filter import (
+    F,
+)  # Import F class which will be used for filtering inventory
 from rich import print
 from nornir_napalm.plugins.tasks import napalm_get
 from nornir_utils.plugins.functions import print_result
 
-DEFAULT_GATEWAY = '10.220.88.1'
+DEFAULT_GATEWAY = "10.220.88.1"
 
 # Create norn object by initialising Nornir - Pass in config file
 norn = InitNornir("config.yaml")
@@ -30,7 +32,7 @@ my_results = norn.run(task=napalm_get, getters=["arp_table"])
 # Loop through results and parse default gateway ARP entry
 for host, result in my_results.items():
     # Loop through arp entries by parsing to get arp_table dict from result attribute
-    for entry in result[0].result['arp_table']:
-        # Look for default gateway IP 
-        if entry['ip'] == DEFAULT_GATEWAY:
+    for entry in result[0].result["arp_table"]:
+        # Look for default gateway IP
+        if entry["ip"] == DEFAULT_GATEWAY:
             print(f"Host: {host}, Gateway: {entry}")

@@ -12,7 +12,9 @@ What purpose does each of those three data types serve (i.e. why do we have them
 """
 
 from nornir import InitNornir
-from nornir.core.filter import F # Import F class which will be used for filtering inventory
+from nornir.core.filter import (
+    F,
+)  # Import F class which will be used for filtering inventory
 from rich import print
 from nornir_netmiko import netmiko_send_command
 
@@ -24,10 +26,12 @@ ios_filt = F(groups__contains="ios")
 norn = norn.filter(ios_filt)
 
 # Call netmiko send command plugin on IOS hosts via run() method
-my_results = norn.run(task=netmiko_send_command, command_string="show run | inc hostname")
+my_results = norn.run(
+    task=netmiko_send_command, command_string="show run | inc hostname"
+)
 
-# 2c - Get only cisco3 info and inspect data MultiResult object
-host_results = my_results['cisco3']
+# 2c - Get only cisco3 info and inspect data MultiResult object
+host_results = my_results["cisco3"]
 print(type(host_results))
 print()
 
@@ -41,9 +45,3 @@ print(task_result.host)
 print(task_result.name)
 print(task_result.result)
 print(task_result.failed)
-
-
-
-
-
-

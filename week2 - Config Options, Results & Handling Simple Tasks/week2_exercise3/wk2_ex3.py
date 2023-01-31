@@ -26,12 +26,14 @@ Host: arista4, Gateway: 10.220.88.1 N/A 0062.ec29.70fe Vlan1, Ethernet1
 """
 
 from nornir import InitNornir
-from nornir.core.filter import F # Import F class which will be used for filtering inventory
+from nornir.core.filter import (
+    F,
+)  # Import F class which will be used for filtering inventory
 from rich import print
 from nornir_netmiko import netmiko_send_command
 from nornir_utils.plugins.functions import print_result
 
-DEFAULT_GATEWAY = '10.220.88.1'
+DEFAULT_GATEWAY = "10.220.88.1"
 
 # Create norn object by initialising Nornir - Pass in config file
 norn = InitNornir("config.yaml")
@@ -47,7 +49,7 @@ my_results = norn.run(task=netmiko_send_command, command_string="show ip arp")
 # Loop through results and parse default gateway ARP entry
 for host, result in my_results.items():
     # Loop and get Result object's result attribute and turn it into list - one element per ARP entry
-    for entry in result[0].result.split('\n'):
+    for entry in result[0].result.split("\n"):
         # Find ARP entry with default gateways IP
         if DEFAULT_GATEWAY in entry:
             print(f"Host: {host}, Gateway: {entry}")

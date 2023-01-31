@@ -6,7 +6,9 @@ Print the "type" of the my_results object. Additionally, inspect the my_results 
 """
 
 from nornir import InitNornir
-from nornir.core.filter import F # Import F class which will be used for filtering inventory
+from nornir.core.filter import (
+    F,
+)  # Import F class which will be used for filtering inventory
 from rich import print
 from nornir_netmiko import netmiko_send_command
 
@@ -18,7 +20,9 @@ ios_filt = F(groups__contains="ios")
 norn = norn.filter(ios_filt)
 
 # Call netmiko send command plugin on IOS hosts via run() method
-my_results = norn.run(task=netmiko_send_command, command_string="show run | inc hostname")
+my_results = norn.run(
+    task=netmiko_send_command, command_string="show run | inc hostname"
+)
 
 # Print type of return data structure
 print(type(my_results))
@@ -29,12 +33,7 @@ print(my_results.keys())
 print(my_results.values())
 
 for k, v in my_results.items():
-    print('*' * 30)
+    print("*" * 30)
     print(k)
     print(v[0].result)
-    print('*' * 30)
-
-
-
-
-
+    print("*" * 30)
